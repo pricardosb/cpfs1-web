@@ -29,55 +29,8 @@ if "is_master_active" not in st.session_state: st.session_state["is_master_activ
 
 EMAIL_MASTER = "pricardosbrito@gmail.com"
 ARQUIVO_BANCO = "dados_acesso_cpfs.enc"
-ARQUIVO_BANCO = "dados_acesso_cpfs.enc"
-
-def render_inspecionar_banco():
-    st.markdown("### 🔍 Inspeção de Segurança: Conteúdo do Banco de Dados")
-    st.info("Esta ferramenta baixa o arquivo criptografado do Google Drive, aplica a chave mestra e exibe os registros salvos.")
-    
-    if st.button("📥 Baixar, Descriptografar e Exibir Banco", use_container_width=True):
-        with st.spinner("Sincronizando com o Google Drive..."):
-            try:
-                drive_storage.baixar_banco_drive()
-            except Exception as e:
-                st.warning(f"Nota ao sincronizar com o Drive: {e}")
-            
-            if not os.path.exists(ARQUIVO_BANCO):
-                st.error(f"❌ O arquivo '{ARQUIVO_BANCO}' não foi encontrado na raiz do ambiente nem no Drive.")
-                return
-            
-            try:
-                # Pega a chave do st.secrets
-                chave = st.secrets["CHAVE_SISTEMA"].encode()
-                cipher = Fernet(chave)
-                
-                with open(ARQUIVO_BANCO, "rb") as f:
-                    dados_cifrados = f.read()
-                    
-                if not dados_cifrados:
-                    st.warning("⚠️ O arquivo existe, mas está vazio (0 bytes).")
-                    return
-                
-                # Descriptografa e lê o JSON
-                dados_json_str = cipher.decrypt(dados_cifrados).decode()
-                lista_registros = json.loads(dados_json_str)
-                
-                st.success(f"✅ Sucesso! O arquivo contém **{len(lista_registros)}** registro(s).")
-                
-                # Exibe de forma interativa na tela
-                st.json(lista_registros)
-                
-            except Exception as e:
-                st.error(f"❌ Erro ao descriptografar o arquivo. Verifique se a CHAVE_SISTEMA está correta. Detalhes: {e}")
-
-render_inspecionar_banco()
 
 def eh_usuario_master():
-    """
-    VERIFICAÇÃO MASTER ROBUSTA:
-    Confere se a flag da sessão está ativa OU se o usuário logado no banco possui o tipo 'Master' 
-    ou o e-mail oficial correspondente.
-    """
     if st.session_state.get("is_master_active") is True:
         return True
         
