@@ -10,17 +10,10 @@ NOME_ARQUIVO_DRIVE = "dados_acesso_cpfs.enc"
 
 def obter_servico_drive():
     try:
-        credenciais_dict = dict(st.secrets["gcp_service_account"])
+        # Lê o JSON completo diretamente da nova string unificada do st.secrets
+        credenciais_json_str = st.secrets["GCP_JSON_CREDENTIALS"]
+        credenciais_dict = json.loads(credenciais_json_str)
         
-        # LIMPEZA PROFUNDA E BLINDADA DA CHAVE PRIVADA:
-        if "private_key" in credenciais_dict:
-            pk = credenciais_dict["private_key"]
-            # Substitui escape literal \n por quebras reais, se houver
-            pk = pk.replace("\\n", "\n")
-            # Divide em linhas, remove espaços em branco extras nas pontas de cada linha (que corrompem o Base64/símbolo 61) e recompõe
-            linhas_limpas = [linha.strip() for linha in pk.splitlines() if linha.strip()]
-            credenciais_dict["private_key"] = "\n".join(linhas_limpas) + "\n"
-            
         SCOPES = ['https://www.googleapis.com/auth/drive']
         creds = service_account.Credentials.from_service_account_info(credenciais_dict, scopes=SCOPES)
         service = build('drive', 'v3', credentials=creds)
@@ -28,7 +21,7 @@ def obter_servico_drive():
     except Exception as e:
         st.error(f"❌ Erro na autenticação do Google Drive: {e}")
         return None
-
+        
 def obter_id_pasta(service):
     try:
         return st.secrets["pasta_id"]
