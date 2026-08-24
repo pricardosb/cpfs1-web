@@ -6,7 +6,7 @@ from google.oauth2 import service_account
 from googleapiclient.discovery import build
 from googleapiclient.http import MediaIoBaseDownload, MediaFileUpload
 
-NOME_ARQUIVO_DRIVE = "dados_acesso.enc"
+NOME_ARQUIVO_DRIVE = "dados_acesso_cpfs.enc"
 
 def obter_servico_drive():
     try:
