@@ -1,0 +1,9 @@
+__pycache__/
+*.pyc
+.streamlit/secrets.toml
+.venv/
+*.xlsx
+*.xls
+*.docx
+chave_sistema.key
+dados_acesso.enc
