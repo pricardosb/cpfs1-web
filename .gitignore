@@ -6,4 +6,4 @@ __pycache__/
 *.xls
 *.docx
 chave_sistema.key
-dados_acesso.enc
+dados_acesso_cpfs.enc
