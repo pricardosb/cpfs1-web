@@ -11,6 +11,12 @@ NOME_ARQUIVO_DRIVE = "dados_acesso_cpfs.enc"
 def obter_servico_drive():
     try:
         credenciais_dict = dict(st.secrets["gcp_service_account"])
+        
+        # TRATAMENTO BLINDADO DA CHAVE PRIVADA: 
+        # Converte barras invertidas '\n' em quebras de linha reais e limpa o formato PEM
+        if "private_key" in credenciais_dict:
+            credenciais_dict["private_key"] = credenciais_dict["private_key"].replace("\\n", "\n").replace("\r", "")
+            
         SCOPES = ['https://www.googleapis.com/auth/drive']
         creds = service_account.Credentials.from_service_account_info(credenciais_dict, scopes=SCOPES)
         service = build('drive', 'v3', credentials=creds)
@@ -78,11 +84,10 @@ def salvar_banco_drive():
         media = MediaFileUpload(NOME_ARQUIVO_DRIVE, mimetype='application/octet-stream', resumable=True)
 
         if file_id:
-            # Atualiza o arquivo existente (consumindo a cota da sua conta pessoal onde a pasta está)
             service.files().update(fileId=file_id, media_body=media).execute()
             return True
         else:
-            st.error("❌ O arquivo 'dados_acesso.enc' não foi encontrado na pasta do Google Drive. Crie um arquivo vazio com esse nome na pasta compartilhada para que o sistema possa atualizá-lo.")
+            st.error(f"❌ O arquivo '{NOME_ARQUIVO_DRIVE}' não foi encontrado na pasta do Google Drive. Crie um arquivo vazio com esse nome na pasta compartilhada para que o sistema possa atualizá-lo.")
             return False
     except Exception as e:
         st.error(f"❌ Falha ao atualizar o banco no Google Drive: {e}")
