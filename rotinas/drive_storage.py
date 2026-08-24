@@ -12,10 +12,14 @@ def obter_servico_drive():
     try:
         credenciais_dict = dict(st.secrets["gcp_service_account"])
         
-        # TRATAMENTO BLINDADO DA CHAVE PRIVADA: 
-        # Converte barras invertidas '\n' em quebras de linha reais e limpa o formato PEM
+        # LIMPEZA PROFUNDA E BLINDADA DA CHAVE PRIVADA:
         if "private_key" in credenciais_dict:
-            credenciais_dict["private_key"] = credenciais_dict["private_key"].replace("\\n", "\n").replace("\r", "")
+            pk = credenciais_dict["private_key"]
+            # Substitui escape literal \n por quebras reais, se houver
+            pk = pk.replace("\\n", "\n")
+            # Divide em linhas, remove espaços em branco extras nas pontas de cada linha (que corrompem o Base64/símbolo 61) e recompõe
+            linhas_limpas = [linha.strip() for linha in pk.splitlines() if linha.strip()]
+            credenciais_dict["private_key"] = "\n".join(linhas_limpas) + "\n"
             
         SCOPES = ['https://www.googleapis.com/auth/drive']
         creds = service_account.Credentials.from_service_account_info(credenciais_dict, scopes=SCOPES)
