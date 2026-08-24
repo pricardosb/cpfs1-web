@@ -78,7 +78,7 @@ def enviar_email_gmail(email_destino, nome, token):
         return True
 
     assunto = "CPFS WEB - Confirmação de Cadastro"
-    url_base_app = "https://cpfs-web-zcggwtxd5kfhjuydz6pwnx.streamlit.app/?nav=confirmar_acesso"
+    url_base_app = "https://cpfs1-web-bpf7z3v5sdo5eng2z8qz48.streamlit.app/?nav=confirmar_acesso"
     
     corpo_html = f"""
     <!DOCTYPE html>
