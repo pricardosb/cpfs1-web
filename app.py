@@ -31,6 +31,11 @@ EMAIL_MASTER = "pricardosbrito@gmail.com"
 ARQUIVO_BANCO = "dados_acesso_cpfs.enc"
 
 def eh_usuario_master():
+    """
+    VERIFICAÇÃO MASTER ROBUSTA:
+    Confere se a flag da sessão está ativa OU se o usuário logado no banco possui o tipo 'Master' 
+    ou o e-mail oficial correspondente.
+    """
     if st.session_state.get("is_master_active") is True:
         return True
         
